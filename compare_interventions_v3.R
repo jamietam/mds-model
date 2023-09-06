@@ -10,8 +10,8 @@ library(scales)
 library(openxlsx)
 library(viridis)
 
-load("C:/Users/jamietam/Dropbox/Analysis/NSDUH/mdetx_depsmk_2010-2018.rda")
-load("C:/Users/jamietam/Dropbox/GitHub/smk-dep-model/depsmkprevs_2005-2018_v2.rda")
+load("C:/Users/JT936/Dropbox/Analysis/NSDUH/mdetx_depsmk_2010-2018.rda")
+load("C:/Users/JT936/Dropbox/GitHub/mds-model/depsmkprevs_2005-2018_v2.rda")
 
 death_nsF = read.xlsx("cisnet_deathrates.xlsx",sheet=paste0("ns_females"),rowNames=TRUE, colNames=TRUE, check.names=FALSE) 
 death_csF = read.xlsx("cisnet_deathrates.xlsx",sheet=paste0("cs_females"),rowNames=TRUE, colNames=TRUE, check.names=FALSE) 
