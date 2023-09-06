@@ -11,7 +11,7 @@ library(ggplot2)
 library(gridExtra)
 load("mdseprevs0520.rda")
 
-namethisrun = "_090523_tx" 
+namethisrun = "_090523_tx_v3" 
 folder = paste0("Koop",namethisrun,"/") # name the folder where results will be saved
 
 # Read inputs -------------------------------------------------------------
@@ -24,13 +24,13 @@ Na= endage - startage + 1
 emptycompartment <- matrix(0, nrow = Na, ncol = Ny, dimnames=list(c(startage:endage),c(startyear:endyear))) # create matrix of zeroes for compartments
 policystart = 2024
 
-allparamsF = read.xlsx("parameters_tx.xlsx",sheet=paste0("model_females"),rowNames=TRUE,colNames=TRUE) # Adjust parameters in this excel file with estimates to be used in the model
+allparamsF = read.xlsx("parameters_tx_v3.xlsx",sheet=paste0("model_females"),rowNames=TRUE,colNames=TRUE) # Adjust parameters in this excel file with estimates to be used in the model
 paramsF = as.vector(subset(allparamsF,bhat==1)[['estimate']]) # Parameters where bhat = 1 can be estimated by bhat
 paramsnamesF = rownames(subset(allparamsF,bhat==1))  
 lowervectorF = as.vector(subset(allparamsF,bhat==1)[['lower']]) # lower bounds for bhat parameters
 uppervectorF = as.vector(subset(allparamsF,bhat==1)[['upper']]) # upper bounds for bhat parameters
 
-allparamsM = read.xlsx("parameters_tx.xlsx",sheet=paste0("model_males"),rowNames=TRUE,colNames=TRUE) # Adjust parameters in this excel file with estimates to be used in the model
+allparamsM = read.xlsx("parameters_tx_v3.xlsx",sheet=paste0("model_males"),rowNames=TRUE,colNames=TRUE) # Adjust parameters in this excel file with estimates to be used in the model
 paramsM = as.vector(subset(allparamsM,bhat==1)[['estimate']]) # Parameters where bhat = 1 can be estimated by bhat
 paramsnamesM = rownames(subset(allparamsM,bhat==1))  
 lowervectorM = as.vector(subset(allparamsM,bhat==1)[['lower']]) # lower bounds for bhat parameters
@@ -174,7 +174,7 @@ main <- function(getmodelprevs, whichgender, allparamsF, paramsF,paramsnamesF, m
     proptx[65:99] = ifelse(allparamsF["ahltmde_65plus","bhat"]==0,allparamsF["ahltmde_65plus","estimate"],paramsF[match("ahltmde_65plus",paramsnamesF)])
   }
   if (!('ahltmde_18to25'%in% paramsnamesF)){
-    utilrates = read.xlsx("parameters_tx.xlsx",sheet=paste0("util_", whichgender),rowNames=TRUE,colNames=TRUE)
+    utilrates = read.xlsx("parameters_tx_v3.xlsx",sheet=paste0("util_", whichgender),rowNames=TRUE,colNames=TRUE)
     colnames(utilrates) <- c("1.0","1.1","1.2","100")
     proptx = matrix(NA,99,1)
     # proptx[1:17] = utilrates["ahltmde_18to25",util] #rep(0,17) # assumes same proportion is in tx before age 18
