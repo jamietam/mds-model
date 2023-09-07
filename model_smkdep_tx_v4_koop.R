@@ -11,7 +11,7 @@ library(ggplot2)
 library(gridExtra)
 load("mdseprevs0520.rda")
 
-namethisrun = "_090523_tx_v3" 
+namethisrun = "_090523_tx_v4" 
 folder = paste0("Koop",namethisrun,"/") # name the folder where results will be saved
 
 # Read inputs -------------------------------------------------------------

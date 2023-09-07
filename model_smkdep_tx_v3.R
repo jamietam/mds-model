@@ -1,5 +1,5 @@
 rm(list = ls())
-mainDir <- "C:/Users/jamietam/Dropbox/GitHub/smk-dep-model"
+mainDir <- "C:/Users/JT936/Dropbox/GitHub/mds-model"
 setwd(file.path(mainDir))
 library(openxlsx)
 library(reshape)
