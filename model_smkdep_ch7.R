@@ -1,6 +1,5 @@
 rm(list = ls())
-# mainDir <- "C:/Users/mauro/Dropbox/SGR Chapter 7 Mental Health Substance Use/Data analysis/mds-model"
-mainDir <- "C:/Users/JT936/Dropbox/SGR Chapter 7 Mental Health Substance Use/Data Analysis/mds-model"
+mainDir <- "/Users/JT936/Dropbox/GitHub/mds-model/"
 
 setwd(file.path(mainDir))
 library(openxlsx)
@@ -14,9 +13,8 @@ library(gridExtra)
 load("mdseprevs0520.rda")
 depsmkprevs_by_year = subset(mdseprevs, survey_year<2020)
 
-
-date = "083023" # name the folder where results will be saved
-namethisrun = "_checkSADprops" # name this run
+date = "121823" # name the folder where results will be saved
+namethisrun = "_checknumbers" # name this run
 
 folder = paste0(date,namethisrun,"/") # name the folder where results will be saved
 
@@ -67,6 +65,7 @@ getnsduhprevs <- function(depsmkprevs_by_year,whichgender,numpop,denompop){
   row.names(nsduhdata)<-agerownames
   return(nsduhdata)
 }
+
 # Main model --------------------------------------------------------------
 main <- function(getmodelprevs, whichgender, allparamsF, paramsF,paramsnamesF, 
                  initeff_dep,initeff_ndep,cesseff_dep, cesseff_ndep, equity_init, equity_cess){
@@ -76,8 +75,6 @@ main <- function(getmodelprevs, whichgender, allparamsF, paramsF,paramsnamesF,
   
   # smk params --------------------------------------------------------------
   
-  # smk_init_cisnet = read.xlsx("cisnet_smkrates_nhis2018.xlsx",sheet=paste0(whichgender,"_init"),rowNames=TRUE, colNames=TRUE, check.names=FALSE)
-  # smk_cess_cisnet = read.xlsx("cisnet_smkrates_nhis2018.xlsx",sheet=paste0(whichgender,"_cess"),rowNames=TRUE, colNames=TRUE, check.names=FALSE)
   smk_init_cisnet = read.xlsx("cisnet_smkrates_by_calyear_061923.xlsx",sheet=paste0(whichgender,"_init"),rowNames=TRUE, colNames=TRUE, check.names=FALSE)
   smk_cess_cisnet = read.xlsx("cisnet_smkrates_by_calyear_061923.xlsx",sheet=paste0(whichgender,"_cess"),rowNames=TRUE, colNames=TRUE, check.names=FALSE)
   
@@ -275,7 +272,6 @@ main <- function(getmodelprevs, whichgender, allparamsF, paramsF,paramsnamesF,
   fs_ndep <- (fs_nevdep+fs_fdep+fs_recall) 
   
   ndeppop = ns_ndep+cs_ndep+fs_ndep
-  
 
   # Smoking attributable mortality
   SADdep = cs_dep *(death_cs[,paste(c(startyear:endyear))]-death_ns[,paste(c(startyear:endyear))])+fs_dep * (death_fs[,paste(c(startyear:endyear))]-death_ns[,paste(c(startyear:endyear))])
@@ -283,15 +279,12 @@ main <- function(getmodelprevs, whichgender, allparamsF, paramsF,paramsnamesF,
   ALLdeathsdep = ns_dep * death_ns[,paste(c(startyear:endyear))] +cs_dep *death_cs[,paste(c(startyear:endyear))] + fs_dep * death_fs[,paste(c(startyear:endyear))]
   ALLdeathsndep = ns_ndep * death_ns[,paste(c(startyear:endyear))] +cs_ndep *death_cs[,paste(c(startyear:endyear))] + fs_ndep * death_fs[,paste(c(startyear:endyear))]
   
-  browser()
   data = cbind(cs_dep[,"2023"],cs_dep[,"2040"],cs_dep[,"2060"],cs_dep[,"2080"],cs_dep[,"2100"],  fs_dep[,"2023"],fs_dep[,"2040"],fs_dep[,"2060"],fs_dep[,"2080"],fs_dep[,"2100"],
   cs_ndep[,"2023"],cs_ndep[,"2040"],cs_ndep[,"2060"],cs_ndep[,"2080"],cs_ndep[,"2100"],fs_ndep[,"2023"],fs_ndep[,"2040"],fs_ndep[,"2060"],fs_ndep[,"2080"],fs_ndep[,"2100"],
   ns_dep[,"2023"],ns_dep[,"2040"],ns_dep[,"2060"],ns_dep[,"2080"],ns_dep[,"2100"],ns_ndep[,"2023"],ns_ndep[,"2040"],ns_ndep[,"2060"],ns_ndep[,"2080"],ns_ndep[,"2100"]  )
   colnames(data) <- c("cs_dep2023","2040","2060","2080","2100","fs_dep2023","2040","2060","2080","2100", "cs_ndep2023","2040","2060","2080","2100","fs_ndep2023","2040","2060","2080","2100",
                       "ns_dep2023","2040","2060","2080","2100","ns_ndep2023","2040","2060","2080","2100")
-  write.csv(data,"popsizesF.csv")
-  # 
-  # depdata <- cbind(cs_dep[,c("2023","2100")],fs_dep[,"2023"],ns_dep[,c("2023","2100")death_cs[,"2023"],death_ns[,"2023"],
+
   # Years of Life Lost
   YLLdep =  LE_ns_dep[,paste(c(2023:endyear))] * (cs_dep[,paste(c(2023:endyear))]*ucs_minus_uns[,paste(c(2023:endyear))] + fs_dep[,paste(c(2023:endyear))]*ufs_minus_uns[,paste(c(2023:endyear))])
   YLLndep = LE_ns_nodep[,paste(c(2023:endyear))] * (cs_nevdep[,paste(c(2023:endyear))]*ucs_minus_uns[,paste(c(2023:endyear))] + fs_nevdep[,paste(c(2023:endyear))]*ufs_minus_uns[,paste(c(2023:endyear))])
@@ -315,15 +308,14 @@ main <- function(getmodelprevs, whichgender, allparamsF, paramsF,paramsnamesF,
   
   PRequity = (s2["total","2100"]/s7["total" ,"2100"]-1)^2
   
-  return(list(modelsmkprevdata, PRequity, SADdep, SADndep, ALLdeathsdep, ALLdeathsndep, YLLdep, YLLndep))
-  #return(list(modelsmkprevdata, modeldepdata)) #PRequity, SADdep, SADndep, ALLdeathsdep, ALLdeathsndep, YLLdep, YLLndep))
+  return(list(modelsmkprevdata, PRequity, SADdep, SADndep, ALLdeathsdep, ALLdeathsndep, YLLdep, YLLndep,modeldepdata))
 }
 
 # Bhat estimation ---------------------------------------------------------
 
 getsumdiffs = function(out, assignedsex){
   modelsmkdata=out[[1]]
-  modeldepdata=out[[2]]
+  modeldepdata=out[[9]]
   years<- c("X2005","X2006","X2007","X2008","X2009","X2010","X2011","X2012","X2013","X2014","X2015","X2016","X2017","X2018","X2019") # only look at output for years where NSDUH data are available
   years2 <- c("2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019")
   
@@ -368,7 +360,6 @@ ML_bhatM=function(paramsM){
 resbhatM=dfp(xM,ML_bhatM)
 paramsM=resbhatM$est
 
-#
 # Calibration visualization -------------------------------------------------------
 
 dir.create(file.path(mainDir, folder), showWarnings = FALSE)
@@ -386,10 +377,10 @@ ns_totalpopF = cbind(as.data.frame(outF[[1]][[4]][,years2]),"neversmoker","total
 cs_totalpopF = cbind(as.data.frame(outF[[1]][[5]][,years2]),"currentsmoker","totalpop","Women")
 fs_totalpopF = cbind(as.data.frame(outF[[1]][[6]][,years2]),"formersmoker","totalpop","Women")
 
-dep_nspopF = cbind(as.data.frame(outF[[2]][[1]][,years2]),"dep","neversmokers","Women") # dep prevalence among never smokers
-dep_cspopF = cbind(as.data.frame(outF[[2]][[2]][,years2]),"dep","currentsmokers","Women")  # dep prevalence among current smokers
-dep_fspopF = cbind(as.data.frame(outF[[2]][[3]][,years2]),"dep","formersmokers","Women")  # dep prevalence among former smokers
-dep_totalpopF = cbind(as.data.frame(outF[[2]][[4]][,years2]),"dep","totalpop","Women") 
+dep_nspopF = cbind(as.data.frame(outF[[9]][[1]][,years2]),"dep","neversmokers","Women") # dep prevalence among never smokers
+dep_cspopF = cbind(as.data.frame(outF[[9]][[2]][,years2]),"dep","currentsmokers","Women")  # dep prevalence among current smokers
+dep_fspopF = cbind(as.data.frame(outF[[9]][[3]][,years2]),"dep","formersmokers","Women")  # dep prevalence among former smokers
+dep_totalpopF = cbind(as.data.frame(outF[[9]][[4]][,years2]),"dep","totalpop","Women") 
 
 ns_deppopM = cbind(as.data.frame(outM[[1]][[1]][,years2]),"neversmoker","deppop","Men")
 cs_deppopM = cbind(as.data.frame(outM[[1]][[2]][,years2]),"currentsmoker","deppop","Men")
@@ -398,10 +389,10 @@ ns_totalpopM = cbind(as.data.frame(outM[[1]][[4]][,years2]),"neversmoker","total
 cs_totalpopM = cbind(as.data.frame(outM[[1]][[5]][,years2]),"currentsmoker","totalpop","Men")
 fs_totalpopM = cbind(as.data.frame(outM[[1]][[6]][,years2]),"formersmoker","totalpop","Men")
 
-dep_nspopM = cbind(as.data.frame(outM[[2]][[1]][,years2]),"dep","neversmokers","Men") # dep prevalence among never smokers
-dep_cspopM = cbind(as.data.frame(outM[[2]][[2]][,years2]),"dep","currentsmokers","Men")  # dep prevalence among current smokers
-dep_fspopM = cbind(as.data.frame(outM[[2]][[3]][,years2]),"dep","formersmokers","Men")  # dep prevalence among former smokers
-dep_totalpopM = cbind(as.data.frame(outM[[2]][[4]][,years2]),"dep","totalpop","Men") 
+dep_nspopM = cbind(as.data.frame(outM[[9]][[1]][,years2]),"dep","neversmokers","Men") # dep prevalence among never smokers
+dep_cspopM = cbind(as.data.frame(outM[[9]][[2]][,years2]),"dep","currentsmokers","Men")  # dep prevalence among current smokers
+dep_fspopM = cbind(as.data.frame(outM[[9]][[3]][,years2]),"dep","formersmokers","Men")  # dep prevalence among former smokers
+dep_totalpopM = cbind(as.data.frame(outM[[9]][[4]][,years2]),"dep","totalpop","Men") 
 
 dfs_list = list(ns_deppopF,cs_deppopF,fs_deppopF,ns_totalpopF,cs_totalpopF,fs_totalpopF,dep_nspopF,dep_cspopF,dep_fspopF,dep_totalpopF,
                 ns_deppopM,cs_deppopM,fs_deppopM,ns_totalpopM,cs_totalpopM,fs_totalpopM,dep_nspopM,dep_cspopM,dep_fspopM,dep_totalpopM)
@@ -596,11 +587,6 @@ outM1 = main(getmodelprevs, "males", allparamsM, paramsM,paramsnamesM, 0.8,0.8,1
 outF2 = main(getmodelprevs, "females", allparamsF, paramsF,paramsnamesF, 1,1,1,1,0.23456919,6.4208368) # runs model using parameters specified in excel sheet OR using bhat estimates
 outM2 = main(getmodelprevs, "males", allparamsM, paramsM,paramsnamesM, 1,1,1,1, 0.53074971,3.2352955)
 
-#outF9 = main(getmodelprevs, "females", allparamsF, paramsF,paramsnamesF, mphr = 1) # runs model using parameters specified in excel sheet OR using bhat estimates
-#outM9 = main(getmodelprevs, "males", allparamsM, paramsM,paramsnamesM, mphr = 1)
-
-
-
 library(ggplot2)
 library(reshape)
 library(grid)
@@ -609,7 +595,6 @@ library(gridExtra)
 library(plyr)
 library(Hmisc)
 library(scales)
-library(xlsx)
 
 xaxisbreaks = c(2023,seq(2023,2100,10)) # specify the ticks on the x-axis of your results plots
 minyear = 2023
@@ -736,61 +721,61 @@ export(equity, "clipboard",  col.names = TRUE, row.names = TRUE)
 
 
 ## tables for figures
-male_spd_model = as.data.frame(t(cs_deppopM0[106:201][6,]))
-male_spd_model_equality = as.data.frame(t(cs_deppopM1[106:201][6,]))
-male_spd_model_equity = as.data.frame(t(cs_deppopM2[106:201][6,]))
+male_md_model = as.data.frame(t(cs_deppopM0[106:201][6,]))
+male_md_model_equality = as.data.frame(t(cs_deppopM1[106:201][6,]))
+male_md_model_equity = as.data.frame(t(cs_deppopM2[106:201][6,]))
 
-male_nospd_model = as.data.frame(t(cs_ndeppopM0[106:201][6,]))
-male_nospd_model_equality = as.data.frame(t(cs_ndeppopM1[106:201][6,]))
-male_nospd_model_equity = as.data.frame(t(cs_ndeppopM2[106:201][6,]))
+male_nomd_model = as.data.frame(t(cs_ndeppopM0[106:201][6,]))
+male_nomd_model_equality = as.data.frame(t(cs_ndeppopM1[106:201][6,]))
+male_nomd_model_equity = as.data.frame(t(cs_ndeppopM2[106:201][6,]))
 
-female_spd_model = as.data.frame(t(cs_deppopF0[106:201][6,]))
-female_spd_model_equality = as.data.frame(t(cs_deppopF1[106:201][6,]))
-female_spd_model_equity = as.data.frame(t(cs_deppopF2[106:201][6,]))
+female_md_model = as.data.frame(t(cs_deppopF0[106:201][6,]))
+female_md_model_equality = as.data.frame(t(cs_deppopF1[106:201][6,]))
+female_md_model_equity = as.data.frame(t(cs_deppopF2[106:201][6,]))
 
-female_nospd_model = as.data.frame(t(cs_ndeppopF0[106:201][6,]))
-female_nospd_model_equality = as.data.frame(t(cs_ndeppopF1[106:201][6,]))
-female_nospd_model_equity = as.data.frame(t(cs_ndeppopF2[106:201][6,]))
+female_nomd_model = as.data.frame(t(cs_ndeppopF0[106:201][6,]))
+female_nomd_model_equality = as.data.frame(t(cs_ndeppopF1[106:201][6,]))
+female_nomd_model_equity = as.data.frame(t(cs_ndeppopF2[106:201][6,]))
 
-write.csv(male_spd_model,"male_spd_model.csv")
-write.csv(male_spd_model_equality,"male_spd_model_equality.csv")
-write.csv(male_spd_model_equity,"male_spd_model_equity.csv")
+write.csv(male_md_model,"male_md_model.csv")
+write.csv(male_md_model_equality,"male_md_model_equality.csv")
+write.csv(male_md_model_equity,"male_md_model_equity.csv")
 
-write.csv(male_nospd_model,"male_nospd_model.csv")
-write.csv(male_nospd_model_equality,"male_nospd_model_equality.csv")
-write.csv(male_nospd_model_equity,"male_nospd_model_equity.csv")
+write.csv(male_nomd_model,"male_nomd_model.csv")
+write.csv(male_nomd_model_equality,"male_nomd_model_equality.csv")
+write.csv(male_nomd_model_equity,"male_nomd_model_equity.csv")
 
-write.csv(female_spd_model,"female_spd_model.csv")
-write.csv(female_spd_model_equality,"female_spd_model_equality.csv")
-write.csv(female_spd_model_equity,"female_spd_model_equity.csv")
+write.csv(female_md_model,"female_md_model.csv")
+write.csv(female_md_model_equality,"female_md_model_equality.csv")
+write.csv(female_md_model_equity,"female_md_model_equity.csv")
 
-write.csv(female_nospd_model,"female_nospd_model.csv")
-write.csv(female_nospd_model_equality,"female_nospd_model_equality.csv")
-write.csv(female_nospd_model_equity,"female_nospd_model_equity.csv")
+write.csv(female_nomd_model,"female_nomd_model.csv")
+write.csv(female_nomd_model_equality,"female_nomd_model_equality.csv")
+write.csv(female_nomd_model_equity,"female_nomd_model_equity.csv")
 
 library(rio)
-female_nospd <- matrix(data = NA,nrow = 104,ncol = 3)
-female_nospd[1:104,1] <- female_nospd_model[1:104,1]
-female_nospd[1:104,2] <- female_nospd_model_equality[1:104,1]
-female_nospd[1:104,3] <- female_nospd_model_equity[1:104,1]
-export(female_nospd, "clipboard",col.names = FALSE)
+female_nomd <- matrix(data = NA,nrow = 104,ncol = 3)
+female_nomd[1:104,1] <- female_nomd_model[1:104,1]
+female_nomd[1:104,2] <- female_nomd_model_equality[1:104,1]
+female_nomd[1:104,3] <- female_nomd_model_equity[1:104,1]
+export(female_nomd, "clipboard",col.names = FALSE)
 
-female_spd <- matrix(data = NA,nrow = 104,ncol = 3)
-female_spd[1:104,1] <- female_spd_model[1:104,1]
-female_spd[1:104,2] <- female_spd_model_equality[1:104,1]
-female_spd[1:104,3] <- female_spd_model_equity[1:104,1]
-export(female_spd, "clipboard",col.names = FALSE)
+female_md <- matrix(data = NA,nrow = 104,ncol = 3)
+female_md[1:104,1] <- female_md_model[1:104,1]
+female_md[1:104,2] <- female_md_model_equality[1:104,1]
+female_md[1:104,3] <- female_md_model_equity[1:104,1]
+export(female_md, "clipboard",col.names = FALSE)
 
-male_nospd <- matrix(data = NA,nrow = 104,ncol = 3)
-male_nospd[1:104,1] <- male_nospd_model[1:104,1]
-male_nospd[1:104,2] <- male_nospd_model_equality[1:104,1]
-male_nospd[1:104,3] <- male_nospd_model_equity[1:104,1]
-export(male_nospd, "clipboard",col.names = FALSE)
+male_nomd <- matrix(data = NA,nrow = 104,ncol = 3)
+male_nomd[1:104,1] <- male_nomd_model[1:104,1]
+male_nomd[1:104,2] <- male_nomd_model_equality[1:104,1]
+male_nomd[1:104,3] <- male_nomd_model_equity[1:104,1]
+export(male_nomd, "clipboard",col.names = FALSE)
 
-male_spd <- matrix(data = NA,nrow = 104,ncol = 3)
-male_spd[1:104,1] <- male_spd_model[1:104,1]
-male_spd[1:104,2] <- male_spd_model_equality[1:104,1]
-male_spd[1:104,3] <- male_spd_model_equity[1:104,1]
-export(male_spd, "clipboard",col.names = FALSE)
+male_md <- matrix(data = NA,nrow = 104,ncol = 3)
+male_md[1:104,1] <- male_md_model[1:104,1]
+male_md[1:104,2] <- male_md_model_equality[1:104,1]
+male_md[1:104,3] <- male_md_model_equity[1:104,1]
+export(male_md, "clipboard",col.names = FALSE)
 
 write.csv(depsmkprevs_by_year,"depsmkprevs_by_year.csv")
